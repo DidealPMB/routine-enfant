@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>Ma journée de champion</title>
+<style>
+:root{--bg:#f5f9ff;--card:#fff;--ink:#1f2937;--muted:#667085;--green:#22c55e;--red:#fb7185;--yellow:#facc15;--blue:#60a5fa;--line:#e5e7eb}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(#fff8dc 0,#f4f8ff 28%,#eaf7ff 100%);color:var(--ink);min-height:100vh}
+.wrap{max-width:980px;margin:auto;padding:18px 18px 70px}
+.hero,.section,.footer{background:rgba(255,255,255,.96);border-radius:28px;padding:22px;box-shadow:0 10px 30px rgba(31,41,55,.08);margin-bottom:18px}
+.hero{text-align:center}.hero h1{font-size:clamp(30px,5vw,50px);margin:0 0 8px}.hero p{color:var(--muted);font-size:18px;margin:0 0 16px}
+.scoreline{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.pill{background:#fff1b8;border-radius:999px;padding:10px 16px;font-weight:800;font-size:18px}
+.progress{height:18px;background:#e8edf5;border-radius:99px;overflow:hidden;margin:18px auto 10px;max-width:640px}.bar{height:100%;width:0;background:linear-gradient(90deg,#facc15,#22c55e);transition:.25s}
+.message{background:#f7f9fc;border-radius:16px;padding:13px;font-weight:750;margin-top:10px}
+.section h2{font-size:30px;margin:0 0 4px}.section .sub{margin:0 0 16px;color:var(--muted);font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.task{border:3px solid #edf1f6;border-radius:24px;padding:14px;background:#fff;display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;transition:.2s;position:relative;overflow:hidden}.task.good{border-color:#86efac;background:#f0fdf4}.task.bad{border-color:#fecdd3;background:#fff1f2}
+.pic{width:120px;height:120px;border-radius:24px;display:grid;place-items:center;background:#f8fbff;overflow:hidden}.pic svg{width:100%;height:100%}
+.task h3{font-size:24px;margin:0 0 4px}.hint{font-size:15px;color:var(--muted);margin-bottom:12px}.buttons{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:16px;padding:12px 16px;font-size:18px;font-weight:850;cursor:pointer;touch-action:manipulation}.yes{background:#dcfce7;color:#166534}.no{background:#ffe4e6;color:#9f1239}.undo{background:#eef2f7;color:#475467}.btn:active{transform:scale(.97)}
+.badge{position:absolute;top:10px;right:12px;font-size:28px;display:none}.task.good .badge.goodb,.task.bad .badge.badb{display:block}
+.footer{text-align:center}.reward{font-size:20px;font-weight:850;background:#e5f2ff;border-radius:18px;padding:15px}.reset{margin-top:14px;background:#edf1f6;color:#344054}.tiny{font-size:13px;color:#7b8494;margin-top:10px}
+@media(max-width:760px){.wrap{padding:10px 10px 50px}.hero,.section,.footer{border-radius:22px;padding:16px}.grid{grid-template-columns:1fr}.task{grid-template-columns:96px 1fr}.pic{width:96px;height:96px}.task h3{font-size:21px}.section h2{font-size:26px}.btn{padding:11px 13px;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>🌈 Ma journée de champion</h1>
+    <p>Je gagne des étoiles quand je fais mes petites missions et de bons choix.</p>
+    <div class="scoreline"><div class="pill">⭐ <span id="score">0</span> points</div><div class="pill">🏆 Objectif : 10 points</div></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="message" id="message">Bonjour ! On commence une nouvelle journée ☀️</div>
+  </section>
+
+  <section class="section">
+    <h2>☀️ Le matin</h2><p class="sub">Les petites missions avant de commencer la journée.</p>
+    <div class="grid">
+
+      <article class="task" data-id="dress"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span>
+        <div class="pic"><svg viewBox="0 0 120 120" aria-label="s'habiller"><rect width="120" height="120" rx="24" fill="#e0f2fe"/><circle cx="60" cy="25" r="13" fill="#f6c79c"/><path d="M44 19c5-12 29-10 31 5-8-4-22-4-31 2z" fill="#7c3f1d"/><path d="M37 52l16-12h14l16 12-8 17-8-6v36H53V63l-8 6z" fill="#60a5fa"/><rect x="45" y="97" width="14" height="10" rx="4" fill="#334155"/><rect x="62" y="97" width="14" height="10" rx="4" fill="#334155"/></svg></div>
+        <div><h3>Je m'habille 👕</h3><div class="hint">Je mets mes vêtements avec un petit coup de main si besoin.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bravo</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ À revoir</button></div></div>
+      </article>
+
+      <article class="task" data-id="teeth"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span>
+        <div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#ecfeff"/><path d="M43 29c8-8 26-8 34 0 8 9 5 19 0 31-5 13-7 29-17 29s-12-16-17-29c-5-12-8-22 0-31z" fill="#fff" stroke="#94a3b8" stroke-width="2"/><rect x="23" y="72" width="58" height="10" rx="5" fill="#3b82f6" transform="rotate(-15 23 72)"/><rect x="74" y="56" width="23" height="14" rx="3" fill="#f97316" transform="rotate(-15 74 56)"/><path d="M80 55l2-8m5 7 1-8m5 6 0-8" stroke="#fb7185" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div><h3>Je me brosse les dents 🪥</h3><div class="hint">En haut, en bas, devant et derrière.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bravo</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ À revoir</button></div></div>
+      </article>
+
+      <article class="task" data-id="wash"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span>
+        <div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#e0f2fe"/><circle cx="60" cy="57" r="26" fill="#f6c79c"/><path d="M37 49c2-28 45-31 49-2-13-8-34-9-49 2z" fill="#8b5e3c"/><circle cx="50" cy="58" r="3"/><circle cx="70" cy="58" r="3"/><path d="M52 72c5 5 11 5 16 0" stroke="#b45309" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="30" cy="31" r="7" fill="#7dd3fc"/><circle cx="92" cy="30" r="9" fill="#bae6fd"/><circle cx="27" cy="77" r="5" fill="#bae6fd"/></svg></div>
+        <div><h3>Je me lave 🧼</h3><div class="hint">Visage, mains, et toilette du matin.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bravo</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ À revoir</button></div></div>
+      </article>
+
+      <article class="task" data-id="breakfast"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span>
+        <div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#fff7ed"/><ellipse cx="60" cy="78" rx="42" ry="17" fill="#cbd5e1"/><ellipse cx="60" cy="74" rx="34" ry="12" fill="#fff"/><circle cx="52" cy="70" r="11" fill="#facc15"/><path d="M39 65c7-12 18-16 30-9 10 6 10 17 6 27H39z" fill="#f8fafc"/><rect x="84" y="38" width="9" height="46" rx="4" fill="#94a3b8"/></svg></div>
+        <div><h3>Je prends mon petit-déjeuner 🥣</h3><div class="hint">Je mange tranquillement et je reste à table.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bravo</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ À revoir</button></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>💛 Mes bons comportements</h2><p class="sub">Des gestes simples à reconnaître tout au long de la journée.</p>
+    <div class="grid">
+      <article class="task" data-id="please"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#fef9c3"/><circle cx="45" cy="57" r="23" fill="#f6c79c"/><path d="M26 51c3-24 37-28 43-3-12-7-29-7-43 3z" fill="#7c3f1d"/><circle cx="38" cy="57" r="2.7"/><circle cx="52" cy="57" r="2.7"/><path d="M39 68c4 4 8 4 12 0" stroke="#b45309" stroke-width="3" fill="none"/><path d="M70 25h34v35H81l-10 10V60h-1z" fill="#fff" stroke="#f59e0b" stroke-width="3"/><text x="87" y="47" text-anchor="middle" font-size="24">🙏</text></svg></div><div><h3>Je dis « s'il te plaît » 🙏</h3><div class="hint">Quand je demande quelque chose.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="thanks"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#fce7f3"/><circle cx="42" cy="58" r="22" fill="#f6c79c"/><path d="M23 51c4-22 34-25 40-3-11-6-27-6-40 3z" fill="#5b4636"/><path d="M35 68c5 5 10 5 15 0" stroke="#b45309" stroke-width="3" fill="none"/><path d="M71 31h31v31H82l-11 11V62z" fill="#fff" stroke="#ec4899" stroke-width="3"/><text x="86" y="53" text-anchor="middle" font-size="22">❤️</text></svg></div><div><h3>Je dis « merci » ❤️</h3><div class="hint">Quand quelqu'un m'aide ou me donne quelque chose.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="talk"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#ede9fe"/><circle cx="43" cy="61" r="22" fill="#f6c79c"/><circle cx="82" cy="61" r="22" fill="#eab38c"/><path d="M25 54c4-22 34-24 39-3" fill="#6b4423"/><path d="M65 54c4-22 34-24 39-3" fill="#3f2d20"/><path d="M36 70c5 4 9 4 14 0M75 70c5 4 9 4 14 0" stroke="#9a5a37" stroke-width="3" fill="none"/><path d="M49 30h27v19H59l-8 7v-7h-2z" fill="#fff" stroke="#8b5cf6" stroke-width="2"/><text x="62" y="44" text-anchor="middle" font-size="13">♥</text></svg></div><div><h3>Je parle gentiment 🗣️</h3><div class="hint">Je ne parle pas mal à papa, maman ou aux autres.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="help"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#dcfce7"/><rect x="25" y="61" width="56" height="34" rx="6" fill="#fb923c"/><rect x="34" y="52" width="38" height="13" rx="4" fill="#fdba74"/><circle cx="45" cy="45" r="9" fill="#60a5fa"/><rect x="56" y="33" width="16" height="18" rx="4" fill="#facc15"/><path d="M86 47c10 2 14 9 12 19-2 10-9 15-18 14" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round"/></svg></div><div><h3>J'aide 🤝</h3><div class="hint">Je donne un petit coup de main à la maison.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="tidy"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#dbeafe"/><rect x="22" y="63" width="76" height="34" rx="6" fill="#f59e0b"/><rect x="30" y="54" width="60" height="13" rx="5" fill="#fbbf24"/><circle cx="45" cy="47" r="11" fill="#ef4444"/><rect x="59" y="31" width="18" height="23" rx="4" fill="#22c55e"/><path d="M82 46l10-15 8 18z" fill="#8b5cf6"/></svg></div><div><h3>Je range mes jouets 🧸</h3><div class="hint">Quand j'ai fini de jouer, je remets les choses à leur place.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="listen"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#ffedd5"/><path d="M51 25c20 0 34 16 34 37 0 18-9 34-25 34-12 0-15-9-15-16 0-8 5-12 11-17 8-6 11-11 10-18-1-8-7-12-15-12-9 0-16 7-17 16" fill="#f6c79c" stroke="#b45309" stroke-width="3"/><path d="M52 46c10-8 22 1 17 12-3 7-12 8-13 17" fill="none" stroke="#b45309" stroke-width="4" stroke-linecap="round"/><path d="M27 39h15m-18 14h14m-8 14h12" stroke="#fb923c" stroke-width="4" stroke-linecap="round"/></svg></div><div><h3>J'écoute 👂</h3><div class="hint">Quand papa ou maman me parle, je m'arrête et j'écoute.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="calm"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#ccfbf1"/><circle cx="60" cy="56" r="27" fill="#f6c79c"/><path d="M36 49c3-25 42-27 49-2-15-6-33-6-49 2z" fill="#6b4423"/><path d="M46 57h8m12 0h8" stroke="#334155" stroke-width="3" stroke-linecap="round"/><path d="M52 72c5 3 11 3 16 0" stroke="#9a5a37" stroke-width="3" fill="none"/><path d="M25 89c12-7 23-9 35-9s23 2 35 9" stroke="#14b8a6" stroke-width="10" stroke-linecap="round"/><path d="M23 26c8-8 14-10 21-5M97 26c-8-8-14-10-21-5" stroke="#5eead4" stroke-width="4" stroke-linecap="round"/></svg></div><div><h3>Je me calme 🌬️</h3><div class="hint">Quand je suis fâché, je souffle et je demande de l'aide.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+
+      <article class="task" data-id="table"><span class="badge goodb">⭐</span><span class="badge badb">☁️</span><div class="pic"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="#fef3c7"/><rect x="18" y="69" width="84" height="10" rx="4" fill="#a16207"/><rect x="28" y="79" width="8" height="25" fill="#92400e"/><rect x="84" y="79" width="8" height="25" fill="#92400e"/><circle cx="60" cy="59" r="16" fill="#fff" stroke="#cbd5e1" stroke-width="3"/><circle cx="60" cy="59" r="7" fill="#fb923c"/><rect x="35" y="42" width="5" height="27" rx="2" fill="#94a3b8"/><rect x="82" y="42" width="5" height="27" rx="2" fill="#94a3b8"/></svg></div><div><h3>Je reste bien à table 🍽️</h3><div class="hint">Je mange tranquillement sans crier ni jouer avec la nourriture.</div><div class="buttons"><button class="btn yes" type="button" onclick="mark(this,1)">⭐ Bon point</button><button class="btn no" type="button" onclick="mark(this,-1)">☁️ Mauvais point</button></div></div></article>
+    </div>
+  </section>
+
+  <section class="footer">
+    <div class="reward" id="reward">🎁 Encore quelques étoiles pour débloquer la récompense !</div>
+    <button class="btn reset" type="button" onclick="resetDay()">🔄 Commencer une nouvelle journée</button>
+    <div class="tiny">Les points restent enregistrés sur cet appareil jusqu'à la remise à zéro.</div>
+  </section>
+</div>
+<script>
+const KEY='journeeChampionV4';
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){state={}}
+function mark(btn,val){
+  const task=btn.closest('.task');
+  const id=task.dataset.id;
+  if(state[id]===val){delete state[id]} else {state[id]=val}
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+  render();
+  if(navigator.vibrate) navigator.vibrate(20);
+}
+function score(){return Object.values(state).reduce((a,v)=>a+(v===1?1:v===-1?-1:0),0)}
+function render(){
+  document.querySelectorAll('.task').forEach(t=>{t.classList.remove('good','bad');const v=state[t.dataset.id];if(v===1)t.classList.add('good');if(v===-1)t.classList.add('bad')});
+  const s=Math.max(0,score());
+  document.getElementById('score').textContent=s;
+  document.getElementById('bar').style.width=Math.min(100,s/10*100)+'%';
+  document.getElementById('message').textContent=s>=10?'🎉 Bravo champion ! Objectif atteint !':s>=7?'🌟 Super journée, encore un petit effort !':s>=4?'👏 Ça avance très bien !':'Bonjour ! On commence une nouvelle journée ☀️';
+  document.getElementById('reward').textContent=s>=10?'🏆 Récompense débloquée ! Bravo !':'🎁 Encore '+(10-s)+' étoile'+(10-s>1?'s':'')+' pour débloquer la récompense !';
+}
+function resetDay(){if(confirm('On remet tous les points à zéro pour une nouvelle journée ?')){state={};try{localStorage.removeItem(KEY)}catch(e){}render()}}
+render();
+</script>
+</body>
+</html>
