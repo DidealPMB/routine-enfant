@@ -8,7 +8,8 @@
   function fmt(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
   function removeModal(){document.getElementById('routineTimerOverlay')?.remove()}
   function button(){return document.getElementById('routineTimerBtn')}
-  function renderButton(){const b=button();if(!b)return;const s=state(),r=remaining();b.classList.toggle('running',!!s&&r>0);b.classList.toggle('finished',!!s&&r===0);b.textContent=!s?'⏱️ Timer':r>0?'⏱️ '+fmt(r):'⏱️ Terminé'}
+  function ensureButtonParts(){const b=button();if(!b)return null;if(!b.querySelector('.timerBtnIcon'))b.innerHTML='<span class="timerBtnIcon" aria-hidden="true">⏱️</span><span class="timerBtnText">Timer</span>';return b}
+  function renderButton(){const b=ensureButtonParts();if(!b)return;const s=state(),r=remaining(),text=b.querySelector('.timerBtnText');b.classList.toggle('running',!!s&&r>0);b.classList.toggle('finished',!!s&&r===0);if(text)text.textContent=!s?'Timer':r>0?fmt(r):'Terminé'}
   function confetti(){for(let i=0;i<18;i++){const e=document.createElement('span');e.className='timerConfetti';e.textContent=['⭐','✨','🎉'][i%3];e.style.left=(20+Math.random()*60)+'vw';e.style.top=(35+Math.random()*20)+'vh';e.style.setProperty('--tx',(Math.random()*260-130)+'px');document.body.appendChild(e);setTimeout(()=>e.remove(),1300)}}
   function finish(){const s=state();if(!s||s.notified)return;s.notified=true;s.finished=true;save();chime();if(navigator.vibrate)navigator.vibrate([160,70,160,70,220]);const msg=document.getElementById('routineTimerMessage');if(msg)msg.innerHTML='🎉 <b>Le temps est terminé !</b>';const card=document.getElementById('routineTimerCard');if(card)card.classList.add('timerDone');confetti()}
   function tick(){renderButton();const s=state();if(!s)return;const r=remaining(),clock=document.getElementById('routineTimerClock'),bar=document.getElementById('routineTimerBar');if(clock)clock.textContent=fmt(r);if(bar){const p=s.duration?Math.max(0,Math.min(100,r/s.duration*100)):0;bar.style.width=p+'%'}if(r===0)finish()}
@@ -18,5 +19,5 @@
   window.closeRoutineTimer=function(){removeModal()};
   window.addRoutineTimerMinute=function(){const s=state();if(!s)return;s.endAt=Math.max(Date.now(),s.endAt)+60000;s.duration=(s.duration||0)+60;s.notified=false;s.finished=false;save();tick()};
   window.stopRoutineTimer=function(){if(!state())return;if(!confirm('Arrêter le timer ?'))return;cfg.routineTimer=null;save();removeModal();tick()};
-  window.addEventListener('load',()=>{renderButton();setInterval(tick,500)});
+  window.addEventListener('load',()=>{ensureButtonParts();renderButton();setInterval(tick,500)});
 })();
