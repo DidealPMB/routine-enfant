@@ -1,4 +1,4 @@
-/* Routine du midi, placée juste avant sieste / temps calme. */
+/* Routine du midi + ordre chronologique de la journée. */
 (function(){
   const midday={
     title:'🍽️ Midi',
@@ -13,8 +13,6 @@
     ]
   };
   GROUPS.midday=midday;
-  const restIndex=ORDER.indexOf('rest');
-  if(!ORDER.includes('midday')) ORDER.splice(restIndex>=0?restIndex:1,0,'midday');
   baseCfg.blocks.midday=true;
   midday.tasks.forEach(t=>baseCfg.tasks[t[0]]=true);
   app.profiles.forEach(p=>{
@@ -22,6 +20,8 @@
     if(p.cfg.blocks.midday===undefined)p.cfg.blocks.midday=true;
     midday.tasks.forEach(t=>{if(p.cfg.tasks[t[0]]===undefined)p.cfg.tasks[t[0]]=true});
   });
+  /* Les routines de la journée d'abord, dans l'ordre chronologique. */
+  ORDER.splice(0,ORDER.length,'morning','midday','rest','evening','cleanliness','behaviors','school','autonomy');
   bind();save();
   if(typeof render==='function')render();
 })();
