@@ -4,7 +4,8 @@ function renderWeek(){const m=monday(new Date()),names=['Lun','Mar','Mer','Jeu',
 function renderStats(){const t=totals();statsInfo.innerHTML=`<p>⭐ Total étoiles : <b>${t.stars}</b></p><p>🏁 Journées clôturées : <b>${t.closed}</b></p><p>🔥 Meilleure série : <b>${streak()}</b></p><p>🚽 Réussites pot : <b>${t.pot}</b></p>`;renderBadges()}
 function avatarHtml(){return cfg.photo?`<img src="${cfg.photo}" alt="">`:cfg.avatar}
 function profileStars(p){const oc=cfg,od=db;cfg=p.cfg;db=p.db;const n=totals().stars;cfg=oc;db=od;return n}
-function renderProfiles(){topAvatar.innerHTML=avatarHtml();topName.textContent=cfg.childName;profileSelector.innerHTML=app.profiles.map(p=>`<button class="chip ${p.id===app.activeId?'active':''}" onclick="switchProfile('${p.id}')"><div>${p.cfg.photo?'📷':p.cfg.avatar||'🦁'}</div><b>${p.cfg.childName||'Champion'}</b><div>⭐ ${profileStars(p)}</div></button>`).join('');childNameInput.value=cfg.childName;avatarChoices.innerHTML=avatars.map(a=>`<button class="btn" onclick="chooseAvatar('${a}')">${a}</button>`).join('')}
+function profileAvatarHtml(p){return p.cfg.photo?`<img src="${p.cfg.photo}" alt="">`:(p.cfg.avatar||'🦁')}
+function renderProfiles(){topAvatar.innerHTML=avatarHtml();topName.textContent=cfg.childName;profileSelector.innerHTML=app.profiles.map(p=>`<button class="chip ${p.id===app.activeId?'active':''}" onclick="switchProfile('${p.id}')"><div class="profileChipAvatar">${profileAvatarHtml(p)}</div><b>${p.cfg.childName||'Champion'}</b><div>⭐ ${profileStars(p)}</div></button>`).join('');childNameInput.value=cfg.childName;avatarChoices.innerHTML=avatars.map(a=>`<button class="avatarChoiceBtn ${!cfg.photo&&cfg.avatar===a?'active':''}" onclick="chooseAvatar('${a}')">${a}</button>`).join('')}
 function addProfile(){const name=prompt('Prénom du nouvel enfant ?','Champion');if(!name)return;const p=newProfile(name,avatars[app.profiles.length%avatars.length]);app.profiles.push(p);app.activeId=p.id;bind();save();render();showView('settings')}
 function switchProfile(id){app.activeId=id;bind();save();render()}
 function deleteProfile(){if(app.profiles.length===1)return alert('Il faut garder au moins un profil.');if(!confirm('Supprimer ce profil et tout son historique ?'))return;app.profiles=app.profiles.filter(p=>p.id!==app.activeId);app.activeId=app.profiles[0].id;bind();save();render()}
@@ -29,6 +30,50 @@ function uniformTaskCard(t){const v=db.days[key()].state[t[0]];return `<div clas
 function uniformPottyCard(t){const k=t[0]==='pot-pee'?'pee':'poop';if(cfg.pottyMode[k]==='stars')return uniformTaskCard(t);const n=db.days[key()].pot[k]||0;return `<div class="actionCard"><div class="actionHead"><span class="actionEmoji">🚽</span><span class="actionName">${t[2]}</span></div><div class="actionCount">${n}</div><div class="actionCounter"><button class="minus" onclick="pot('${k}',-1)">−</button><button class="plus" onclick="pot('${k}',1)">＋</button></div></div>`}
 function groupLayoutClass(count){return count<=4?'oneRow':'twoRows'}
 function renderToday(){const day=db.days[key()];if(day.closed){todayBlocks.innerHTML=`<div class="box closed"><div style="font-size:58px">🏁🏆</div><h2>Journée clôturée</h2><p>⭐ ${score(day.state)} étoiles</p><button class="btn" onclick="reopenDay()">🔓 Rouvrir</button></div>`;finishBtn.style.display='none';return}finishBtn.style.display='block';let html='';for(const gk of ORDER){const g=GROUPS[gk];if(!cfg.blocks[gk])continue;const tasks=g.tasks.filter(t=>cfg.tasks[t[0]]!==false);if(!tasks.length)continue;const cards=tasks.map(t=>g.type==='potty'?uniformPottyCard(t):uniformTaskCard(t)).join('');html+=`<section class="box"><h2 class="sectionTitle">${g.title}</h2><div class="actionViewport"><div class="actionGrid ${groupLayoutClass(tasks.length)}">${cards}</div></div></section>`}todayBlocks.innerHTML=html}
+
+/* Collection étendue de badges */
+function closedRecords(){return Object.values(db.days).filter(d=>d.closed)}
+function countGreat(id){return closedRecords().filter(d=>d.state?.[id]===2).length}
+function countAtLeast(p){return closedRecords().filter(d=>percent(score(d.state||{}),maxScore())>=p).length}
+function countPerfect(){const a=activeIds();return a.length?closedRecords().filter(d=>a.every(id=>d.state?.[id]===2)).length:0}
+function countAllAtLeastOne(){const a=activeIds();return a.length?closedRecords().filter(d=>a.every(id=>(d.state?.[id]??-1)>=1)).length:0}
+function groupPerfectCount(groupKey){const ids=GROUPS[groupKey].tasks.filter(t=>cfg.tasks[t[0]]!==false).map(t=>t[0]);return ids.length?closedRecords().filter(d=>ids.every(id=>d.state?.[id]===2)).length:0}
+BADGES.push(
+ ['days3','🗓️','3 aventures','bronze',()=>totals().closed>=3],
+ ['day70','😊','Belle journée','bronze',()=>countAtLeast(70)>=1],
+ ['morning1','🌞','Matin de champion','bronze',()=>groupPerfectCount('morning')>=1],
+ ['evening1','🌙','Soirée de champion','bronze',()=>groupPerfectCount('evening')>=1],
+ ['polite3','🙏','Super poli','bronze',()=>countGreat('please')>=3&&countGreat('thanks')>=3],
+ ['helper3','🤝','Petit assistant','bronze',()=>countGreat('help')>=3],
+ ['tidy3','🧸','As du rangement','bronze',()=>countGreat('tidy')>=3],
+ ['listen3','👂','Oreilles de lynx','bronze',()=>countGreat('listen')>=3],
+ ['calm3','🧘','Je retrouve mon calme','bronze',()=>countGreat('calm')>=3],
+ ['table3','🍽️','Champion à table','bronze',()=>countGreat('table')>=3],
+ ['quiet3','😴','Roi du temps calme','bronze',()=>countGreat('quiet-time')>=3],
+ ['days7','📆','Une semaine d’aventures','silver',()=>totals().closed>=7],
+ ['morning5','🌅','5 matins au top','silver',()=>groupPerfectCount('morning')>=5],
+ ['evening5','🌜','5 soirées au top','silver',()=>groupPerfectCount('evening')>=5],
+ ['polite10','💖','Politesse en or','silver',()=>countGreat('please')>=10&&countGreat('thanks')>=10],
+ ['helper10','🦸','Super assistant','silver',()=>countGreat('help')>=10],
+ ['tidy10','🧹','Maître du rangement','silver',()=>countGreat('tidy')>=10],
+ ['listen10','🦊','Super écoute','silver',()=>countGreat('listen')>=10],
+ ['calm10','🌿','Maître du calme','silver',()=>countGreat('calm')>=10],
+ ['pot25','🚽','As du pot','silver',()=>totals().pot>=25],
+ ['stars500','🚀','500 étoiles','gold',()=>totals().stars>=500],
+ ['days14','🌟','Deux semaines d’efforts','gold',()=>totals().closed>=14],
+ ['perfect1','👑','Journée parfaite','gold',()=>countPerfect()>=1],
+ ['perfect3','🏆','Triple perfection','gold',()=>countPerfect()>=3],
+ ['balanced5','🌈','Toujours je progresse','gold',()=>countAllAtLeastOne()>=5],
+ ['pot50','🏅','Propreté champion','gold',()=>totals().pot>=50],
+ ['school5','🎓','Petit écolier','gold',()=>countGreat('focus')>=5||countGreat('homework')>=5||countGreat('reading')>=5],
+ ['autonomy5','🧭','Je deviens autonome','gold',()=>countGreat('shoes')>=5||countGreat('coat')>=5||countGreat('laundry')>=5],
+ ['days30plus','🗓️','Un mois de champion','legendary',()=>totals().closed>=30],
+ ['stars1000','🌌','1000 étoiles','legendary',()=>totals().stars>=1000],
+ ['pot100','💫','100 réussites au pot','legendary',()=>totals().pot>=100],
+ ['perfect10','👑','Légende des journées parfaites','legendary',()=>countPerfect()>=10],
+ ['days50','🏰','50 aventures terminées','legendary',()=>totals().closed>=50],
+ ['days100','🐉','100 jours de champion','legendary',()=>totals().closed>=100]
+);
 
 /* Badges accessibles à l'enfant sans ouvrir l'espace parent */
 function openKidBadges(){updateBadges();const unlocked=BADGES.filter(b=>cfg.badgesUnlocked[b[0]]).length;const o=document.createElement('div');o.className='overlay open';o.id='kidBadgesOverlay';o.innerHTML=`<div class="kidBadgeModal"><div style="font-size:52px">🏅✨</div><h2>Mes badges</h2><div class="kidBadgeScore">${unlocked} / ${BADGES.length} débloqués</div><div class="kidBadgeGrid">${BADGES.map(b=>{const ok=!!cfg.badgesUnlocked[b[0]];return `<div class="kidBadgeCard ${ok?b[3]:'locked'}"><div class="kidBadgeIcon">${ok?b[1]:'🔒'}</div><div class="kidBadgeName">${b[2]}</div><small>${ok?b[3].toUpperCase():'À débloquer'}</small></div>`}).join('')}</div><button class="btn closeKidBadges" onclick="document.getElementById('kidBadgesOverlay').remove()">← Retour à ma journée</button></div>`;document.body.appendChild(o)}
