@@ -1,0 +1,27 @@
+/* Commercial V2 : avatar évolutif, accessoires et niveaux. */
+(function(){
+const ITEMS=[
+ {id:'cap',icon:'🧢',name:'Casquette étoile',level:1},
+ {id:'glasses',icon:'🥽',name:'Lunettes d’aventurier',level:2},
+ {id:'pirate',icon:'🏴‍☠️',name:'Chapeau pirate',level:3},
+ {id:'crown',icon:'👑',name:'Couronne',level:4},
+ {id:'dino',icon:'🦖',name:'Bonnet dinosaure',level:5},
+ {id:'space',icon:'🪐',name:'Casque spatial',level:6},
+ {id:'cape',icon:'🦸',name:'Cape de héros',level:7},
+ {id:'magic',icon:'✨',name:'Aura magique',level:8}
+];
+function ensure(c){c.avatarEvolution??={enabled:false,showChildButton:true,xpPerStar:5,levelSize:200,equipped:null,bonusEnabled:false}}
+app.profiles.forEach(p=>ensure(p.cfg||(p.cfg={})));bind();ensure(cfg);save();
+function xp(){return totals().stars*(Number(cfg.avatarEvolution.xpPerStar)||5)}
+function level(){const size=Math.max(50,Number(cfg.avatarEvolution.levelSize)||200);return Math.max(1,Math.floor(xp()/size)+1)}
+function levelProgress(){const size=Math.max(50,Number(cfg.avatarEvolution.levelSize)||200),v=xp()%size;return {xp:xp(),size,v,pct:Math.round(v/size*100)}}
+function unlocked(i){return level()>=i.level}
+function avatarBase(){return cfg.photo?`<img src="${cfg.photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(cfg.avatar||'🦁')}
+window.equipAvatarItem=function(id){const i=ITEMS.find(x=>x.id===id);if(!i||!unlocked(i))return;cfg.avatarEvolution.equipped=cfg.avatarEvolution.equipped===id?null:id;save();render();showView('settings')};
+function preview(){const eq=ITEMS.find(i=>i.id===cfg.avatarEvolution.equipped),p=levelProgress();return `<div class="avatarEvolutionShell"><div class="avatarPreviewCard"><div class="evoAvatarStage">${avatarBase()}${eq?`<span class="evoAccessory">${eq.icon}</span>`:''}</div><div class="evoLevel">Niveau ${level()}</div><div class="evoProgress"><i style="width:${p.pct}%"></i></div><small>${p.v} / ${p.size} XP</small><small>Total : ${p.xp} XP</small>${eq?`<b>${eq.icon} ${eq.name}</b>`:'<span class="muted">Aucun accessoire équipé</span>'}</div><div><h4>Éléments à débloquer</h4><div class="evoCatalog">${ITEMS.map(i=>`<button class="evoItem ${unlocked(i)?'unlocked':'locked'}" onclick="equipAvatarItem('${i.id}')" ${unlocked(i)?'':'disabled'}><span class="icon">${unlocked(i)?i.icon:'🔒'}</span><b>${i.name}</b><small>Niveau ${i.level}${cfg.avatarEvolution.equipped===i.id?' · Équipé':''}</small></button>`).join('')}</div></div></div>`}
+function settings(){return `<div class="settingsGroup avatarEvolutionSettings"><h3>🧑‍🚀 Avatar évolutif</h3><p class="muted">L’enfant gagne de l’XP grâce à ses étoiles et débloque progressivement des accessoires.</p><label class="toggleRow"><span>Activer l’avatar évolutif</span><input type="checkbox" ${cfg.avatarEvolution.enabled?'checked':''} onchange="cfg.avatarEvolution.enabled=this.checked;save();render()"></label><label class="toggleRow"><span>Afficher « Mon avatar » en mode enfant</span><input type="checkbox" ${cfg.avatarEvolution.showChildButton?'checked':''} onchange="cfg.avatarEvolution.showChildButton=this.checked;save();render()"></label><div class="settingInline"><span>XP gagnée par étoile</span><select onchange="cfg.avatarEvolution.xpPerStar=Number(this.value);save();render()">${[1,2,5,10].map(n=>`<option value="${n}" ${Number(cfg.avatarEvolution.xpPerStar)===n?'selected':''}>${n} XP</option>`).join('')}</select></div><div class="settingInline"><span>XP nécessaire par niveau</span><select onchange="cfg.avatarEvolution.levelSize=Number(this.value);save();render()">${[100,150,200,250,300,400].map(n=>`<option value="${n}" ${Number(cfg.avatarEvolution.levelSize)===n?'selected':''}>${n} XP</option>`).join('')}</select></div>${preview()}</div>`}
+window.openChildAvatar=function(){if(!cfg.avatarEvolution.enabled)return;const o=document.createElement('div');o.className='overlay open';o.innerHTML=`<div class="modal childToolModal"><button class="historyClose" onclick="this.closest('.overlay').remove()">✕</button><h2>🧑‍🚀 Mon avatar</h2>${preview()}<button class="btn" onclick="this.closest('.overlay').remove()">← Retour</button></div>`;document.body.appendChild(o)};
+function inject(){const box=document.querySelector('#settingsView>.box');if(!box)return;box.querySelector('.avatarEvolutionSettings')?.remove();const h=document.createElement('div');h.innerHTML=settings();const n=h.firstElementChild;n.classList.add('settingsCollapsed');const title=n.querySelector('h3');title.classList.add('settingsAccordionTitle');title.insertAdjacentHTML('beforeend','<span class="settingsChevron">⌄</span>');title.onclick=()=>n.classList.toggle('settingsCollapsed');box.appendChild(n)}
+function childButton(){let b=document.getElementById('childAvatarBtn');if(!b){b=document.createElement('button');b.id='childAvatarBtn';b.className='childToolBtn avatar';b.innerHTML='🧑‍🚀 Mon avatar';b.onclick=openChildAvatar;document.getElementById('childSideTools')?.appendChild(b)}b.style.display=cfg.kidMode&&cfg.avatarEvolution.enabled&&cfg.avatarEvolution.showChildButton?'':'none'}
+const prevSettings=window.renderSettings;window.renderSettings=function(){prevSettings();ensure(cfg);inject()};const prevRender=window.render;window.render=function(){prevRender();ensure(cfg);childButton()};inject();childButton();
+})();
