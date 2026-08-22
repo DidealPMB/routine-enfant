@@ -7,9 +7,18 @@
     {id:'rewards',icon:'🎁',title:'Récompenses',desc:'Étoiles, récompenses, boutique et coffres.',keys:['récompense hebdomadaire','récompense','boutique','coffres','pondération','score']},
     {id:'app',icon:'⚙️',title:'Application & données',desc:'Sauvegarde, options générales et réglages techniques.',keys:['sauvegarde','note parentale','préférence','données']}
   ];
+  const WIDE_KEYS=['profil & avatar','avatar evolutif','planning par jour','missions personnalisees','missions','packs de routines','boutique de recompenses','carte d’aventure'];
+  const OPEN_KEY='champion.settings.categories.v2';
   function clean(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
   function categoryFor(group){const title=clean(group.querySelector(':scope>h3')?.textContent);for(const c of CATS){if(c.keys.some(k=>title.includes(clean(k))))return c.id}return 'app'}
+  function groupTitle(g){return clean(g.querySelector(':scope>h3')?.textContent)}
+  function isWide(g){const t=groupTitle(g);return WIDE_KEYS.some(k=>t.includes(clean(k))) || g.classList.contains('profileAvatarSettings') || g.classList.contains('weeklyPlannerSettings') || g.classList.contains('customRoutineSettings')}
+  function readOpen(){try{return JSON.parse(localStorage.getItem(OPEN_KEY)||'{}')}catch(e){return{}}}
+  function writeOpen(v){try{localStorage.setItem(OPEN_KEY,JSON.stringify(v))}catch(e){}}
+  function setCategoryOpen(section,open){section.classList.toggle('categoryCollapsed',!open);section.setAttribute('aria-expanded',open?'true':'false');const c=section.querySelector('.settingsCategoryChevron');if(c)c.textContent=open?'⌃':'⌄'}
+  function bindCategory(section){const head=section.querySelector('.settingsCategoryHead');if(!head||head.dataset.bound)return;head.dataset.bound='1';head.setAttribute('role','button');head.setAttribute('tabindex','0');const toggle=()=>{const open=section.classList.contains('categoryCollapsed');setCategoryOpen(section,open);const state=readOpen();state[section.dataset.category]=open;writeOpen(state)};head.addEventListener('click',toggle);head.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}})}
   function build(host){
+    const previous=readOpen();
     host.querySelectorAll(':scope>.settingsCategory').forEach(cat=>{cat.querySelectorAll(':scope>.settingsCategoryGrid>.settingsGroup').forEach(g=>host.appendChild(g));cat.remove()});
     const groups=[...host.querySelectorAll(':scope>.settingsGroup')].filter(g=>getComputedStyle(g).display!=='none'||!g.classList.contains('legacyHidden'));
     if(!groups.length)return;
@@ -18,15 +27,16 @@
       const members=groups.filter(g=>categoryFor(g)===c.id);
       if(!members.length)return;
       const section=document.createElement('section');section.className=`settingsCategory settingsCategory-${c.id}`;section.dataset.category=c.id;
-      section.innerHTML=`<div class="settingsCategoryHead"><div class="settingsCategoryIcon">${c.icon}</div><div><h3>${c.title}</h3><p>${c.desc}</p></div></div><div class="settingsCategoryGrid"></div>`;
-      const grid=section.querySelector('.settingsCategoryGrid');members.forEach(g=>grid.appendChild(g));host.appendChild(section)
+      section.innerHTML=`<div class="settingsCategoryHead"><div class="settingsCategoryIcon">${c.icon}</div><div class="settingsCategoryText"><h3>${c.title}</h3><p>${c.desc}</p></div><div class="settingsCategoryMeta"><span>${members.length} rubrique${members.length>1?'s':''}</span><b class="settingsCategoryChevron">⌃</b></div></div><div class="settingsCategoryGrid"></div>`;
+      const grid=section.querySelector('.settingsCategoryGrid');members.forEach(g=>{g.classList.toggle('settingsWideGroup',isWide(g));grid.appendChild(g)});host.appendChild(section);
+      const defaultOpen=c.id==='family'||c.id==='routines';setCategoryOpen(section,previous[c.id]===undefined?defaultOpen:!!previous[c.id]);bindCategory(section)
     });
     if(anchor)host.insertBefore(anchor,host.firstChild);
   }
   function enhanceControls(host){
     host.querySelectorAll('.settingsGroup').forEach(g=>{
       const rows=[...g.children].filter(el=>el.matches?.('.toggleRow,.settingInline'));
-      if(rows.length>=2)g.classList.add('settingsCompactRows');
+      g.classList.toggle('settingsCompactRows',rows.length>=2 && !g.classList.contains('weeklyPlannerSettings'));
       g.querySelectorAll('input[type="checkbox"]').forEach(i=>{const l=i.closest('label');if(l)l.classList.add('touchToggle')});
       g.querySelectorAll('.btn').forEach(b=>b.classList.add('touchBtn'));
     });
