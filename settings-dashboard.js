@@ -1,11 +1,11 @@
 /* Commercial V2 : organisation visuelle des paramètres par familles. */
 (function(){
   const CATS=[
-    {id:'family',icon:'👤',title:'Famille & profil',desc:'Profils, identité de l’enfant et accès parents.',keys:['profil','avatar','code parent']},
+    {id:'family',icon:'👤',title:'Famille & profil',desc:'Profils, identité de l’enfant et avatar.',keys:['profil','avatar']},
     {id:'routines',icon:'🧩',title:'Routines',desc:'Blocs, missions, planning et packs prêts à l’emploi.',keys:['packs de routines','missions personnalisées','planning par jour','blocs','missions','propreté','école','devoir']},
     {id:'child',icon:'🎮',title:'Expérience enfant',desc:'Ce que l’enfant voit et utilise dans son espace.',keys:['mode enfant','carte d’aventure','défi','progression','badge','série','timer']},
     {id:'rewards',icon:'🎁',title:'Récompenses',desc:'Étoiles, récompenses, boutique et coffres.',keys:['récompense hebdomadaire','récompense','boutique','coffres','pondération','score']},
-    {id:'app',icon:'⚙️',title:'Application & données',desc:'Sauvegarde, options générales et réglages techniques.',keys:['sauvegarde','note parentale','préférence','données']}
+    {id:'app',icon:'⚙️',title:'Application & données',desc:'Sécurité, sauvegarde, options générales et données.',keys:['code parent','sauvegarde','note parentale','préférence','données']}
   ];
   const WIDE_KEYS=['profil & avatar','avatar evolutif','planning par jour','missions personnalisees','missions','packs de routines','boutique de recompenses','carte d’aventure'];
   const OPEN_KEY='champion.settings.categories.v2';
