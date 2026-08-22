@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Ma semaine de champion</title>
-<link rel="stylesheet" href="style.css?v=26">
-<link rel="stylesheet" href="timer-global.css?v=26">
-<link rel="stylesheet" href="enhancements.css?v=26">
-<link rel="stylesheet" href="growth-features.css?v=26">
-<link rel="stylesheet" href="child-tools.css?v=26">
-<link rel="stylesheet" href="reward-settings-v2.css?v=26">
-<link rel="stylesheet" href="history-edit.css?v=26">
-<link rel="stylesheet" href="custom-routines.css?v=26">
+<link rel="stylesheet" href="style.css?v=27">
+<link rel="stylesheet" href="timer-global.css?v=27">
+<link rel="stylesheet" href="enhancements.css?v=27">
+<link rel="stylesheet" href="growth-features.css?v=27">
+<link rel="stylesheet" href="child-tools.css?v=27">
+<link rel="stylesheet" href="reward-settings-v2.css?v=27">
+<link rel="stylesheet" href="history-edit.css?v=27">
+<link rel="stylesheet" href="custom-routines.css?v=27">
+<link rel="stylesheet" href="adventure-map.css?v=27">
 </head>
 <body>
 <div class="modeDock"><button id="childModeBtn" class="modeDockBtn childModeBtn" onclick="enterChildMode()">🧒 Enfant</button><button id="parentModeBtn" class="modeDockBtn parentModeBtn" onclick="requestParentMode()">🔒 Parents</button></div>
-<div class="childSideTools" id="childSideTools"><button id="childBadgesBtn" class="childToolBtn badges" onclick="openChildBadges()">🏅 Mes badges</button><button id="childProgressBtn" class="childToolBtn progress" onclick="openChildProgress()">📈 Ma progression</button><button id="childChallengeBtn" class="childToolBtn challenge" onclick="openChildChallenge()">🎯 Mon défi</button></div>
+<div class="childSideTools" id="childSideTools"><button id="childBadgesBtn" class="childToolBtn badges" onclick="openChildBadges()">🏅 Mes badges</button><button id="childProgressBtn" class="childToolBtn progress" onclick="openChildProgress()">📈 Ma progression</button><button id="childChallengeBtn" class="childToolBtn challenge" onclick="openChildChallenge()">🎯 Mon défi</button><button id="childAdventureBtn" class="childToolBtn adventure" onclick="openChildAdventure()">🗺️ Mon aventure</button></div>
 <div class="bottomTools"><button class="kidBadgeBtn" onclick="openKidBadges()">🏅 Mes badges</button><button id="routineTimerBtn" class="activeTimerBtn" onclick="openRoutineTimer()"><span class="timerBtnIcon" aria-hidden="true">⏱️</span><span class="timerBtnText">Timer</span></button></div>
 <div class="overlay" id="pinOverlay"><div class="modal"><h2>🔒 Espace parents</h2><div id="pinDots">○ ○ ○ ○</div><div id="pinError" style="height:22px;color:#dc2626;font-weight:800"></div><div class="keypad" id="keypad"></div><button class="btn" onclick="closePin()">Annuler</button></div></div>
 <div class="wrap">
@@ -26,16 +27,17 @@
 <div id="statsView" class="view"><section class="box"><h2>🏅 Badges</h2><div id="badgeSummary"></div><div class="badgegrid" id="badgeGrid"></div></section><section class="box"><h2>📊 Statistiques</h2><div class="statsPeriods"><button class="btn" onclick="setStatsRange(7)">7 jours</button><button class="btn" onclick="setStatsRange(30)">30 jours</button><button class="btn" onclick="setStatsRange(0)">Tout l'historique</button></div><div id="statsInfo"></div></section></div>
 <div id="settingsView" class="view"><section class="box"><h2>⚙️ Paramètres</h2><div class="settingsGroup"><h3>👨‍👩‍👧 Profils</h3><div class="profiles" id="profileSelector"></div><button class="btn" onclick="addProfile()">＋ Ajouter</button> <button class="btn" onclick="deleteProfile()">🗑️ Supprimer</button></div><div class="settingsGroup"><h3>👦 Profil actif</h3><input id="childNameInput" class="field" maxlength="20" oninput="setChildName(this.value)" placeholder="Prénom"><div id="avatarChoices" style="margin:10px 0"></div><label class="btn">📷 Photo<input type="file" accept="image/*" style="display:none" onchange="handlePhoto(event)"></label> <button class="btn" onclick="removePhoto()">Retirer photo</button></div><div class="settingsGroup"><h3>🎮 Mode enfant</h3><label><input type="checkbox" id="kidToggle" onchange="setKidMode(this.checked)"> Activer l'interface enfant</label></div><div class="settingsGroup"><h3>🔐 Code parent</h3><input id="newPin" class="field" inputmode="numeric" maxlength="4" type="password" placeholder="4 chiffres"><button class="btn" onclick="changePin()">Enregistrer</button></div><div class="settingsGroup"><h3>🎯 Récompense</h3><input id="rewardInput" class="field" oninput="cfg.reward=this.value;save();render()"></div><div class="settingsGroup"><h3>🚽 Propreté</h3><button class="btn" onclick="togglePotMode('pee')" id="peeMode"></button> <button class="btn" onclick="togglePotMode('poop')" id="poopMode"></button></div><div class="settingsGroup"><h3>🧩 Blocs</h3><div id="blockSettings"></div></div><div class="settingsGroup"><h3>✅ Missions</h3><div id="taskSettings"></div></div><div class="settingsGroup"><h3>💾 Sauvegarde</h3><p>Exporte tous les profils, journées, étoiles et badges dans un fichier de sauvegarde.</p><button class="btn" onclick="exportData()">⬇️ Exporter les données</button> <label class="btn">⬆️ Importer une sauvegarde<input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="importData(event)"></label></div></section></div>
 </div>
-<script src="app-core.js?v=26"></script>
-<script src="midday.js?v=26"></script>
-<script src="app-ui.js?v=26"></script>
-<script src="routine-timer.js?v=26"></script>
-<script src="enhancements.js?v=26"></script>
-<script src="stats-insights.js?v=26"></script>
-<script src="growth-features.js?v=26"></script>
-<script src="child-tools.js?v=26"></script>
-<script src="reward-settings-v2.js?v=26"></script>
-<script src="history-edit.js?v=26"></script>
-<script src="custom-routines.js?v=26"></script>
+<script src="app-core.js?v=27"></script>
+<script src="midday.js?v=27"></script>
+<script src="app-ui.js?v=27"></script>
+<script src="routine-timer.js?v=27"></script>
+<script src="enhancements.js?v=27"></script>
+<script src="stats-insights.js?v=27"></script>
+<script src="growth-features.js?v=27"></script>
+<script src="child-tools.js?v=27"></script>
+<script src="reward-settings-v2.js?v=27"></script>
+<script src="history-edit.js?v=27"></script>
+<script src="custom-routines.js?v=27"></script>
+<script src="adventure-map.js?v=27"></script>
 </body>
 </html>
